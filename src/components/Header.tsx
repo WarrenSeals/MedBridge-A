@@ -1,20 +1,21 @@
+import { useNavigate, useLocation } from 'react-router-dom';
 import Logo from './Logo';
-import type { View } from '../types';
 
-interface HeaderProps {
-  onLogoClick: () => void;
-  currentView: View;
-  onGetStarted?: () => void;
-  onLogout?: () => void;
-}
+const Header: React.FC = () => {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
 
-const Header: React.FC<HeaderProps> = ({ onLogoClick, currentView, onGetStarted, onLogout }) => {
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    navigate('/login');
+  };
+
   return (
     <header className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-20">
       <div className="max-w-5xl mx-auto px-6 py-3.5 flex items-center justify-between">
         {/* Logo + wordmark */}
         <button
-          onClick={onLogoClick}
+          onClick={() => navigate('/dashboard')}
           className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
           aria-label="Go to homepage"
         >
@@ -27,30 +28,28 @@ const Header: React.FC<HeaderProps> = ({ onLogoClick, currentView, onGetStarted,
 
         {/* Right-side nav */}
         <nav className="flex items-center gap-4">
-          {currentView !== 'landing' && (
+          {pathname !== '/dashboard' && (
             <button
-              onClick={onLogoClick}
+              onClick={() => navigate('/dashboard')}
               className="text-sm text-gray-500 hover:text-[#1E3A2F] transition-colors font-medium"
             >
               ← Home
             </button>
           )}
-          {currentView === 'landing' && onGetStarted && (
+          {pathname === '/dashboard' && (
             <button
-              onClick={onGetStarted}
+              onClick={() => navigate('/upload')}
               className="bg-[#1E3A2F] hover:bg-[#2E7D55] text-white text-sm font-semibold px-5 py-2 rounded-xl transition-all duration-200"
             >
               Try It Free
             </button>
           )}
-          {onLogout && (
-            <button
-              onClick={onLogout}
-              className="text-sm text-gray-500 hover:text-[#1E3A2F] transition-colors font-medium"
-            >
-              Sign Out
-            </button>
-          )}
+          <button
+            onClick={handleLogout}
+            className="text-sm text-gray-500 hover:text-[#1E3A2F] transition-colors font-medium"
+          >
+            Sign Out
+          </button>
         </nav>
       </div>
     </header>
