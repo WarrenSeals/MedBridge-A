@@ -1,8 +1,5 @@
+import { useNavigate } from 'react-router-dom';
 import Logo from './Logo';
-
-interface LandingPageProps {
-  onGetStarted: () => void;
-}
 
 const docTypes = [
   'Lab Reports',
@@ -17,7 +14,9 @@ const docTypes = [
   'Clinical Notes',
 ];
 
-const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
+const LandingPage: React.FC = () => {
+  const navigate = useNavigate();
+  const onGetStarted = () => navigate('/upload');
   return (
     <main>
       {/* ── Hero ── */}

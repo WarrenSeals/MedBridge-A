@@ -7,12 +7,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { useNavigate } from 'react-router-dom';
 import { mockAnalysisResult } from '../mockData';
 import type { HealthMetric, ActionableStep } from '../types';
-
-interface ResultsPageProps {
-  onNewDocument: () => void;
-}
 
 // ── Metric range bar ─────────────────────────────────────────────────────────
 const MetricRangeBar: React.FC<{ metric: HealthMetric }> = ({ metric }) => {
@@ -65,7 +62,9 @@ const PriorityBadge: React.FC<{ priority: ActionableStep['priority'] }> = ({ pri
 };
 
 // ── Main component ────────────────────────────────────────────────────────────
-const ResultsPage: React.FC<ResultsPageProps> = ({ onNewDocument }) => {
+const ResultsPage: React.FC = () => {
+  const navigate = useNavigate();
+  const onNewDocument = () => navigate('/upload');
   const result = mockAnalysisResult;
 
   const scrollTo = (id: string) =>
