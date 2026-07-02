@@ -12,7 +12,7 @@ const Header: React.FC = () => {
     setAccessToken(null);
     // Fire-and-forget: revokes the refresh cookie on the server.
     // Navigation proceeds immediately so the user is never blocked.
-    apiClient.post('/api/auth/logout').catch(() => undefined);
+    apiClient.post('/api/v1/auth/logout').catch(() => undefined);
     navigate('/login');
   };
 
