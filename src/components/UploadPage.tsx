@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { sampleReportText } from '../mockData';
 
+const ALLOWED_FILE_TYPES = ['pdf', 'txt', 'doc', 'docx', 'jpg', 'jpeg', 'png'];
+
 const ANALYSIS_STEPS = [
   'Reading document structure...',
   'Identifying medical terms and values...',
@@ -68,21 +70,42 @@ const UploadPage: React.FC = () => {
   const [isAnalysing, setIsAnalysing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [pastedText, setPastedText] = useState('');
   const [activeTab, setActiveTab] = useState<'upload' | 'paste'>('upload');
 
   const hasContent = fileName !== null || pastedText.trim().length > 0;
 
+  const validateFile = (file: File) => {
+    const extension = file.name.split('.').pop()?.toLowerCase();
+
+    if (!extension || !ALLOWED_FILE_TYPES.includes(extension)) {
+      setFileName(null);
+      setErrorMessage('Unsupported file type. Please upload a PDF, DOCX, TXT, JPG, or PNG file.');
+      return;
+    }
+
+    setFileName(file.name);
+    setErrorMessage(null);
+  };
+
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
+
     const file = e.dataTransfer.files[0];
-    if (file) setFileName(file.name);
+
+    if (file) {
+      validateFile(file);
+    }
   };
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) setFileName(file.name);
+
+    if (file) {
+      validateFile(file);
+    }
   };
 
   const handleTrySample = () => {
@@ -178,6 +201,12 @@ const UploadPage: React.FC = () => {
             )}
           </div>
         )}
+
+        {errorMessage && (
+          <p className="mt-3 text-sm text-red-600 text-center">
+            {errorMessage}
+          </p>
+        )}  
 
         {/* Paste text area */}
         {activeTab === 'paste' && (
