@@ -1,0 +1,41 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  pythonVersion: "3.12"
+  backendDirectory: "backend"
+
+steps:
+  - checkout: self
+
+  - task: UsePythonVersion@0
+    displayName: "Use Python $(pythonVersion)"
+    inputs:
+      versionSpec: "$(pythonVersion)"
+      addToPath: true
+
+  - script: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+    workingDirectory: "$(backendDirectory)"
+    displayName: "Install backend dependencies"
+
+  - script: |
+      python -c "import fastapi; print('FastAPI import successful')"
+      python -c "from app.main import app; print('MedBridge application import successful')"
+    workingDirectory: "$(backendDirectory)"
+    displayName: "Validate FastAPI application"
+    env:
+      DATABASE_URL: "sqlite:///./medbridge.db"
+
+  - script: |
+      pytest
+    workingDirectory: "$(backendDirectory)"
+    displayName: "Run backend tests"
+    env:
+      DATABASE_URL: "sqlite:///./medbridge.db"
